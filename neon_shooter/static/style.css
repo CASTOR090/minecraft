@@ -1,0 +1,200 @@
+:root {
+    --bg-color: #050505;
+    --neon-blue: #00f3ff;
+    --neon-pink: #ff0055;
+    --neon-green: #0aff00;
+    --neon-purple: #bc13fe;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.game-container {
+    position: relative;
+    box-shadow: 0 0 50px rgba(0, 243, 255, 0.1);
+}
+
+.home-btn {
+    position: absolute;
+    top: -60px;
+    left: 0;
+    color: var(--neon-blue);
+    text-decoration: none;
+    font-size: 0.9em;
+    border: 1px solid var(--neon-blue);
+    padding: 8px 15px;
+    border-radius: 5px;
+    background: rgba(0, 243, 255, 0.05);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 100;
+}
+
+.home-btn:hover {
+    background: var(--neon-blue);
+    color: black;
+    box-shadow: 0 0 15px var(--neon-blue);
+}
+
+canvas {
+    background-color: #080808;
+    background-image:
+        radial-gradient(circle at center, #111 0%, #050505 100%),
+        repeating-linear-gradient(rgba(255, 255, 255, 0.02) 0px, rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 40px),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0px, rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 40px);
+    border: 3px solid var(--neon-purple);
+    box-shadow: 0 0 20px var(--neon-purple);
+    display: block;
+}
+
+.ui-overlay {
+    position: absolute;
+    top: -80px;
+    /* Positioned above the game */
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+}
+
+.score-board {
+    display: flex;
+    gap: 40px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px 30px;
+    border-radius: 30px;
+    border: 1px solid var(--neon-blue);
+    backdrop-filter: blur(5px);
+}
+
+.score-box {
+    text-align: center;
+}
+
+.label {
+    display: block;
+    font-size: 0.7em;
+    color: var(--neon-blue);
+    margin-bottom: 5px;
+}
+
+#score,
+#high-score {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-shadow: 0 0 10px var(--neon-blue);
+}
+
+.overlay-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 50px;
+    border-radius: 20px;
+    border: 2px solid var(--neon-pink);
+    box-shadow: 0 0 40px var(--neon-pink);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+}
+
+.hidden {
+    display: none !important;
+}
+
+h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+    color: white;
+    text-shadow: 0 0 10px var(--neon-pink);
+}
+
+button {
+    background: transparent;
+    border: 2px solid var(--neon-blue);
+    color: white;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    font-family: 'Orbitron';
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 20px;
+}
+
+button:hover {
+    background: var(--neon-blue);
+    color: black;
+    box-shadow: 0 0 20px var(--neon-blue);
+}
+
+.difficulty-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.diff-btn {
+    padding: 10px 15px;
+    font-size: 0.8em;
+    margin-top: 0;
+    opacity: 0.6;
+}
+
+.diff-btn.active {
+    opacity: 1;
+    background: var(--neon-blue);
+    color: #000;
+    box-shadow: 0 0 15px var(--neon-blue);
+}
+
+.level-notification {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 5em;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 30px var(--neon-blue);
+    pointer-events: none;
+    z-index: 1000;
+    animation: zoomOut 2s forwards;
+}
+
+@keyframes zoomOut {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.5);
+    }
+}

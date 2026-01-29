@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Shooter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="game-container">
+        <a href="http://127.0.0.1:8000" class="home-btn"><i class="fa-solid fa-house"></i> HOME</a>
+        <div class="ui-overlay">
+            <div class="score-board">
+                <div class="score-box">
+                    <span class="label">LEVEL</span>
+                    <span id="level">1</span>
+                </div>
+                <div class="score-box">
+                    <span class="label">SCORE</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="score-box">
+                    <span class="label">HIGH SCORE</span>
+                    <span id="high-score">0</span>
+                </div>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+        <div id="level-overlay" class="level-notification hidden">LEVEL 1</div>
+
+        <div id="start-screen" class="overlay-screen">
+            <h1>NEON SHOOTER</h1>
+            <p>Select Difficulty</p>
+            <div class="difficulty-group">
+                <button class="diff-btn" data-diff="easy">EASY</button>
+                <button class="diff-btn active" data-diff="medium">MEDIUM</button>
+                <button class="diff-btn" data-diff="hard">HARD</button>
+                <button class="diff-btn" data-diff="extreme">EXTREME</button>
+            </div>
+            <p style="margin-top: 20px; font-size: 0.8em; color: #888;">WASD to Move | Mouse to Aim & Shoot</p>
+            <button id="start-btn">START MISSION</button>
+        </div>
+
+        <div id="game-over-screen" class="overlay-screen hidden">
+            <h1>MISSION FAILED</h1>
+            <p>Score: <span id="final-score">0</span></p>
+            <button id="restart-btn">RETRY</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Arcade</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="arcade-container">
+        <header>
+            <h1>NEON ARCADE</h1>
+            <p>Select your challenge</p>
+        </header>
+
+        <main class="game-selection">
+            <div class="game-card snake" id="snake-card">
+                <div class="icon-container">
+                    <i class="fa-solid fa-worm"></i>
+                </div>
+                <div class="card-content">
+                    <h2>NEON SNAKE</h2>
+                    <p>Classic snake game with a neon twist. Don't hit the walls!</p>
+                    <a href="http://127.0.0.1:5001" class="play-btn">PLAY NOW</a>
+                </div>
+            </div>
+
+            <div class="game-card pong" id="pong-card">
+                <div class="icon-container">
+                    <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+                </div>
+                <div class="card-content">
+                    <h2>NEON PONG</h2>
+                    <p>High speed retro pong with random power-ups and multiplayer.</p>
+                    <a href="http://127.0.0.1:5000" class="play-btn">PLAY NOW</a>
+                </div>
+            </div>
+
+            <div class="game-card hockey" id="hockey-card">
+                <div class="icon-container">
+                    <i class="fa-solid fa-hockey-puck"></i>
+                </div>
+                <div class="card-content">
+                    <h2>NEON HOCKEY</h2>
+                    <p>Fast-paced air hockey! Shield your goal and smash the puck.</p>
+                    <a href="http://127.0.0.1:5002" class="play-btn">PLAY NOW</a>
+                </div>
+            </div>
+            <div class="game-card shooter" id="shooter-card">
+                <div class="icon-container">
+                    <i class="fa-solid fa-crosshairs"></i>
+                </div>
+                <div class="card-content">
+                    <h2>NEON SHOOTER</h2>
+                    <p>High tech combat mission. Neutralize the neon threats!</p>
+                    <a href="http://127.0.0.1:5003" class="play-btn">PLAY NOW</a>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="neon-line"></div>
+            <p>&copy; 2026 Neon Arcade - Digital Retro Experience</p>
+        </footer>
+    </div>
+</body>
+
+</html>

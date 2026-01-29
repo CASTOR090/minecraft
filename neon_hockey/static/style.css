@@ -1,0 +1,154 @@
+:root {
+    --bg-color: #050505;
+    --neon-blue: #00f3ff;
+    --neon-pink: #ff0055;
+    --neon-yellow: #ffff00;
+}
+
+body {
+    margin: 0;
+    background-color: var(--bg-color);
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.game-container {
+    position: relative;
+    box-shadow: 0 0 50px rgba(0, 243, 255, 0.2);
+}
+
+.home-btn {
+    position: absolute;
+    top: -60px;
+    left: 0;
+    color: var(--neon-blue);
+    text-decoration: none;
+    font-size: 0.9em;
+    border: 1px solid var(--neon-blue);
+    padding: 8px 15px;
+    border-radius: 5px;
+    background: rgba(0, 243, 255, 0.05);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 100;
+}
+
+.home-btn:hover {
+    background: var(--neon-blue);
+    color: black;
+    box-shadow: 0 0 15px var(--neon-blue);
+}
+
+canvas {
+    background: radial-gradient(circle, #111 0%, #050505 100%);
+    border: 4px solid var(--neon-blue);
+    box-shadow: 0 0 20px var(--neon-blue), inset 0 0 30px rgba(0, 243, 255, 0.1);
+    display: block;
+    cursor: none;
+}
+
+.ui-overlay {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+}
+
+.score-board {
+    display: flex;
+    gap: 30px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 30px;
+    border-radius: 40px;
+    border: 1px solid var(--neon-yellow);
+    backdrop-filter: blur(10px);
+}
+
+.label {
+    font-size: 0.7em;
+    color: var(--neon-yellow);
+    display: block;
+    text-align: center;
+}
+
+#player-score,
+#ai-score {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: white;
+    display: block;
+    text-align: center;
+}
+
+.overlay-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 40px;
+    border-radius: 20px;
+    border: 2px solid var(--neon-blue);
+    box-shadow: 0 0 30px var(--neon-blue);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+}
+
+.hidden {
+    display: none !important;
+}
+
+h1 {
+    font-size: 2.5em;
+    text-shadow: 0 0 10px var(--neon-blue);
+    margin-bottom: 30px;
+}
+
+#name-inputs input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--neon-blue);
+    color: white;
+    padding: 10px;
+    font-family: 'Orbitron';
+    text-align: center;
+    margin-bottom: 20px;
+    display: block;
+    width: 200px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+button {
+    background: transparent;
+    border: 2px solid var(--neon-blue);
+    color: white;
+    padding: 10px 20px;
+    font-family: 'Orbitron';
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: var(--neon-blue);
+    color: black;
+    box-shadow: 0 0 20px var(--neon-blue);
+}
+
+#hint {
+    font-size: 0.8em;
+    color: #888;
+}

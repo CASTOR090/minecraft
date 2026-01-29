@@ -1,0 +1,263 @@
+:root {
+    --bg-color: #050505;
+    --neon-blue: #00f3ff;
+    --neon-pink: #ff0055;
+    --neon-green: #0aff00;
+    --neon-purple: #bc13fe;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.arcade-container {
+    width: 90%;
+    max-width: 1200px;
+    text-align: center;
+    padding: 40px 0;
+}
+
+header h1 {
+    font-size: 4em;
+    margin: 0;
+    letter-spacing: 1rem;
+    color: #fff;
+    text-shadow:
+        0 0 10px var(--neon-blue),
+        0 0 20px var(--neon-blue),
+        0 0 40px var(--neon-blue);
+    animation: flicker 3s infinite;
+}
+
+header p {
+    font-size: 1.2em;
+    color: #888;
+    margin-top: 10px;
+}
+
+.game-selection {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    margin: 60px 0;
+    flex-wrap: wrap;
+}
+
+.game-card {
+    position: relative;
+    width: 400px;
+    height: 500px;
+    background: rgba(15, 15, 15, 0.8);
+    border: 2px solid #333;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: flex-end;
+    cursor: default;
+}
+
+.game-card.snake {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 15px rgba(10, 255, 0, 0.1);
+}
+
+.game-card.pong {
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 15px rgba(255, 0, 85, 0.1);
+}
+
+.game-card.hockey {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+}
+
+.game-card:hover {
+    transform: translateY(-20px) scale(1.02);
+}
+
+
+.icon-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -80%);
+    font-size: 8em;
+    opacity: 0.15;
+    transition: all 0.4s;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.game-card.snake .icon-container {
+    color: var(--neon-green);
+}
+
+.game-card.pong .icon-container {
+    color: var(--neon-pink);
+}
+
+.game-card.hockey .icon-container {
+    color: var(--neon-blue);
+}
+
+.game-card.shooter .icon-container {
+    color: var(--neon-pink);
+}
+
+.game-card:hover .icon-container {
+    opacity: 0.6;
+    transform: translate(-50%, -90%);
+    filter: drop-shadow(0 0 20px currentColor);
+}
+
+.game-card.snake:hover {
+    box-shadow: 0 0 40px var(--neon-green);
+}
+
+.game-card.pong:hover {
+    box-shadow: 0 0 40px var(--neon-pink);
+}
+
+.game-card.hockey:hover {
+    box-shadow: 0 0 40px var(--neon-blue);
+}
+
+.game-card.shooter:hover {
+    box-shadow: 0 0 40px var(--neon-pink);
+}
+
+
+.card-content {
+    padding: 30px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    width: 100%;
+}
+
+.game-card h2 {
+    font-size: 2em;
+    margin-bottom: 15px;
+}
+
+.game-card.snake h2 {
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green);
+}
+
+.game-card.shooter h2 {
+    color: var(--neon-pink);
+    text-shadow: 0 0 10px var(--neon-pink);
+}
+
+.game-card.pong h2 {
+    color: var(--neon-pink);
+    text-shadow: 0 0 10px var(--neon-pink);
+}
+
+.game-card.hockey h2 {
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px var(--neon-blue);
+}
+
+.card-content p {
+    font-size: 0.9em;
+    color: #ccc;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.play-btn {
+    display: inline-block;
+    padding: 12px 35px;
+    text-decoration: none;
+    font-weight: bold;
+    border: 2px solid #fff;
+    color: #fff;
+    border-radius: 5px;
+    transition: all 0.3s;
+}
+
+.game-card.snake .play-btn {
+    border-color: var(--neon-green);
+}
+
+.game-card.pong .play-btn {
+    border-color: var(--neon-pink);
+}
+
+.game-card.hockey .play-btn {
+    border-color: var(--neon-blue);
+}
+
+.play-btn:hover {
+    background: #fff;
+    color: #000;
+}
+
+.game-card.snake .play-btn:hover {
+    background: var(--neon-green);
+    border-color: var(--neon-green);
+    color: black;
+}
+
+.game-card.pong .play-btn:hover {
+    background: var(--neon-pink);
+    border-color: var(--neon-pink);
+    color: black;
+}
+
+.game-card.hockey .play-btn:hover {
+    background: var(--neon-blue);
+    border-color: var(--neon-blue);
+    color: black;
+}
+
+footer {
+    margin-top: 50px;
+}
+
+.neon-line {
+    width: 100%;
+    height: 1px;
+    background: var(--neon-purple);
+    box-shadow: 0 0 10px var(--neon-purple);
+    margin-bottom: 20px;
+}
+
+footer p {
+    color: #444;
+    font-size: 0.8em;
+}
+
+@keyframes flicker {
+
+    0%,
+    18%,
+    22%,
+    25%,
+    53%,
+    57%,
+    100% {
+        text-shadow:
+            0 0 10px var(--neon-blue),
+            0 0 20px var(--neon-blue),
+            0 0 40px var(--neon-blue);
+    }
+
+    20%,
+    24%,
+    55%,
+    54% {
+        text-shadow: none;
+        color: #444;
+    }
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JUNNIN Snake</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="game-container">
+        <a href="http://127.0.0.1:8000" class="home-btn"><i class="fa-solid fa-house"></i> HOME</a>
+        <div class="ui-overlay">
+            <div class="score-board">
+                <div class="score-box">
+                    <span class="label">SCORE</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="score-box">
+                    <span class="label">HIGH SCORE</span>
+                    <span id="high-score">0</span>
+                </div>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
+
+        <div id="start-screen" class="overlay-screen">
+            <h1>JUNNIN SNAKE</h1>
+            <p>Use Arrow Keys or WASD to Move</p>
+            <button id="start-btn">START GAME</button>
+        </div>
+
+        <div id="game-over-screen" class="overlay-screen hidden">
+            <h1>GAME OVER</h1>
+            <p>Score: <span id="final-score">0</span></p>
+            <button id="restart-btn">PLAY AGAIN</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

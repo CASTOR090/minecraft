@@ -1,0 +1,207 @@
+:root {
+    --bg-color: #050505;
+    --grid-color: #1a1a1a;
+    --neon-blue: #00f3ff;
+    --neon-purple: #bc13fe;
+    --neon-pink: #ff0055;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.game-container {
+    position: relative;
+    box-shadow: 0 0 50px rgba(188, 19, 254, 0.2);
+}
+
+.home-btn {
+    position: absolute;
+    top: -60px;
+    left: 0;
+    color: var(--neon-blue);
+    text-decoration: none;
+    font-size: 0.9em;
+    border: 1px solid var(--neon-blue);
+    padding: 8px 15px;
+    border-radius: 5px;
+    background: rgba(0, 243, 255, 0.05);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 100;
+}
+
+.home-btn:hover {
+    background: var(--neon-blue);
+    color: black;
+    box-shadow: 0 0 15px var(--neon-blue);
+}
+
+canvas {
+    background-color: rgba(10, 10, 10, 0.9);
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    border: 3px solid var(--neon-purple);
+    box-shadow: 0 0 30px var(--neon-purple), inset 0 0 20px rgba(188, 19, 254, 0.2);
+    display: block;
+    cursor: none;
+    /* Hide cursor over canvas */
+}
+
+.ui-overlay {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+}
+
+.score-board {
+    display: flex;
+    gap: 40px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px 40px;
+    border-radius: 50px;
+    border: 1px solid var(--neon-blue);
+    box-shadow: 0 0 15px var(--neon-blue);
+    backdrop-filter: blur(5px);
+    align-items: center;
+}
+
+.label {
+    display: block;
+    font-size: 0.7em;
+    color: var(--neon-blue);
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+#player-score,
+#ai-score {
+    font-size: 2em;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 10px white;
+    display: block;
+    text-align: center;
+    min-width: 40px;
+}
+
+.divider {
+    width: 2px;
+    height: 40px;
+    background: var(--neon-blue);
+    box-shadow: 0 0 10px var(--neon-blue);
+}
+
+.overlay-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 50px;
+    border-radius: 20px;
+    border: 2px solid var(--neon-pink);
+    box-shadow: 0 0 40px var(--neon-pink);
+    backdrop-filter: blur(10px);
+    transition: opacity 0.3s;
+    z-index: 100;
+}
+
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+h1 {
+    font-size: 3.5em;
+    margin: 0 0 20px 0;
+    color: white;
+    text-shadow:
+        0 0 10px var(--neon-pink),
+        0 0 20px var(--neon-pink),
+        0 0 40px var(--neon-pink);
+    letter-spacing: 3px;
+}
+
+p {
+    color: #ccc;
+    font-size: 1.2em;
+    margin-bottom: 30px;
+}
+
+button {
+    background: transparent;
+    border: 2px solid var(--neon-blue);
+    color: white;
+    padding: 15px 40px;
+    font-size: 1.3em;
+    font-family: 'Orbitron', sans-serif;
+    cursor: pointer;
+    text-shadow: 0 0 5px var(--neon-blue);
+    box-shadow: 0 0 10px var(--neon-blue), inset 0 0 10px var(--neon-blue);
+    transition: all 0.2s;
+    border-radius: 5px;
+}
+
+button:hover {
+    background: var(--neon-blue);
+    color: black;
+    box-shadow: 0 0 40px var(--neon-blue);
+}
+
+.button-group {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+#solo-btn {
+    border-color: var(--neon-blue);
+    text-shadow: 0 0 5px var(--neon-blue);
+    box-shadow: 0 0 10px var(--neon-blue), inset 0 0 10px var(--neon-blue);
+}
+
+#multi-btn {
+    border-color: var(--neon-pink);
+    text-shadow: 0 0 5px var(--neon-pink);
+    box-shadow: 0 0 10px var(--neon-pink), inset 0 0 10px var(--neon-pink);
+}
+
+#solo-btn:hover {
+    background: var(--neon-blue);
+    color: black;
+    box-shadow: 0 0 40px var(--neon-blue);
+}
+
+#multi-btn:hover {
+    background: var(--neon-pink);
+    color: black;
+    box-shadow: 0 0 40px var(--neon-pink);
+}
+
+#controls-hint p {
+    margin: 10px 0;
+    transition: opacity 0.3s;
+}
+
+.hidden {
+    display: none !important;
+}
