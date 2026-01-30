@@ -26,7 +26,10 @@ let p1 = {
     radius: PADDLE_RADIUS,
     color: '#00f3ff',
     score: 0,
-    name: "PLAYER 1"
+    name: "PLAYER 1",
+    lastX: 0,
+    lastY: 0,
+    idleFrames: 0
 };
 
 let p2 = {
@@ -36,7 +39,10 @@ let p2 = {
     color: '#ff0055',
     score: 0,
     name: "PLAYER 2",
-    speed: 5 // for AI
+    speed: 5, // for AI
+    lastX: 0,
+    lastY: 0,
+    idleFrames: 0
 };
 
 let puck = {
@@ -110,6 +116,24 @@ function update() {
             p2.y += (100 - p2.y) * 0.05;
         }
     }
+
+    // Anti-idle logic
+    [p1, p2].forEach(p => {
+        if (Math.abs(p.x - p.lastX) < 0.5 && Math.abs(p.y - p.lastY) < 0.5) {
+            p.idleFrames++;
+        } else {
+            p.idleFrames = 0;
+        }
+        p.lastX = p.x;
+        p.lastY = p.y;
+
+        // If idle for more than 3 seconds (180 frames)
+        if (p.idleFrames > 180) {
+            // Apply slight random movement or move towards puck
+            p.x += (Math.random() - 0.5) * 10;
+            p.y += (Math.random() - 0.5) * 10;
+        }
+    });
 
     // Constraint P2 to top half
     if (p2.y < p2.radius) p2.y = p2.radius;

@@ -238,7 +238,7 @@ function update() {
         ball.vx = -ball.speed;
         ball.vy = (ball.y - (p2.y + p2.h / 2)) * 0.2;
         p2.lastHit = true; player.lastHit = false;
-        createParticles(ball.x + ballSize, ball.y, p2.color);
+        createParticles(ball.x + ball.size, ball.y, p2.color);
     }
 
     // 6. Scoring
