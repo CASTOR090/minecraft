@@ -17,7 +17,7 @@ const controlsP2 = document.getElementById('controls-p2');
 let isGameRunning = false;
 let isMultiplayer = false;
 let score = 0;
-let gameSpeed = 5;
+let gameSpeed = 10;
 let players = [];
 let obstacles = [];
 let roadMarkers = [];
@@ -25,10 +25,10 @@ let animationId;
 let particles = [];
 let windLines = [];
 
-const PLAYER_WIDTH = 40;
-const PLAYER_HEIGHT = 70;
-const OBSTACLE_WIDTH = 50;
-const OBSTACLE_HEIGHT = 50;
+const PLAYER_WIDTH = 45; // Increased from 40
+const PLAYER_HEIGHT = 75; // Increased from 70
+const OBSTACLE_WIDTH = 60; // Increased from 50
+const OBSTACLE_HEIGHT = 60; // Increased from 50
 const LANES = [100, 250, 400];
 
 class Player {
@@ -49,7 +49,7 @@ class Player {
 
         this.targetX = LANES[this.lane] - PLAYER_WIDTH / 2;
         const dx = this.targetX - this.x;
-        this.x += dx * 0.15;
+        this.x += dx * 0.12; // Slower movement (from 0.15) for more difficulty
 
         // Dynamic Tilt
         this.tilt = dx * 0.05;
@@ -130,8 +130,8 @@ class Particle {
 }
 
 class Obstacle {
-    constructor() {
-        this.lane = Math.floor(Math.random() * 3);
+    constructor(lane) {
+        this.lane = lane !== undefined ? lane : Math.floor(Math.random() * 3);
         this.x = LANES[this.lane] - OBSTACLE_WIDTH / 2;
         this.y = -OBSTACLE_HEIGHT;
         this.color = '#ff0055';
@@ -179,9 +179,9 @@ function init() {
     particles = [];
     windLines = [];
     score = 0;
-    gameSpeed = 8; // Increased from 5
+    gameSpeed = 10;
     scoreEl.textContent = '0';
-    speedEl.textContent = '160'; // 8 * 20
+    speedEl.textContent = '200';
 
     // Create initial road markers
     for (let i = 0; i < 10; i++) {
@@ -200,8 +200,20 @@ function init() {
 
 function spawnObstacle() {
     if (!isGameRunning) return;
-    obstacles.push(new Obstacle());
-    const timeout = Math.max(500, 2000 - (score / 100));
+
+    // Randomly spawn in multiple lanes
+    const chance = Math.random();
+    if (chance < 0.3) { // 30% chance for double obstacles
+        const lane1 = Math.floor(Math.random() * 3);
+        let lane2 = Math.floor(Math.random() * 3);
+        while (lane2 === lane1) lane2 = Math.floor(Math.random() * 3);
+        obstacles.push(new Obstacle(lane1));
+        obstacles.push(new Obstacle(lane2));
+    } else {
+        obstacles.push(new Obstacle());
+    }
+
+    const timeout = Math.max(300, 1500 - (score / 80)); // Faster spawning
     setTimeout(spawnObstacle, timeout);
 }
 
@@ -291,7 +303,7 @@ function animate() {
             obstacles.splice(i, 1);
             score += 10;
             scoreEl.textContent = score;
-            gameSpeed += 0.15; // Increased from 0.05
+            gameSpeed += 0.2; // Even faster acceleration
             speedEl.textContent = Math.floor(gameSpeed * 20);
         }
     }
