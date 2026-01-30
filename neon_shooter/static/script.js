@@ -142,27 +142,49 @@ class Player {
 }
 
 class Bullet {
-    constructor(x, y, angle, color = '#ffff00', isEnemy = false, radius = 4, isPiercing = false) {
+    constructor(x, y, angle, color = '#ffff00', isEnemy = false, radius = 4, isPiercing = false, type = 'bullet') {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.color = color;
         this.isEnemy = isEnemy;
         this.isPiercing = isPiercing;
+        this.type = type;
         const speedMult = DIFFICULTY_CONFIG[currentDifficulty].speed;
+        let speed = isEnemy ? 10 * speedMult : 28;
+        if (type === 'meteor') speed = 5 * speedMult;
+
         this.velocity = {
-            x: Math.cos(angle) * (isEnemy ? 10 * speedMult : 28),
-            y: Math.sin(angle) * (isEnemy ? 10 * speedMult : 28)
+            x: Math.cos(angle) * speed,
+            y: Math.sin(angle) * speed
         };
     }
-    update() { this.x += this.velocity.x; this.y += this.velocity.y; }
+    update() {
+        this.x += this.velocity.x;
+        this.y += this.velocity.y;
+        if (this.type === 'meteor' && Math.random() < 0.3) {
+            particles.push(new Particle(this.x, this.y, '#ff8800'));
+        }
+    }
     draw() {
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = this.type === 'meteor' ? 20 : 10;
         ctx.shadowColor = this.color;
         ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fill();
+
+        if (this.type === 'meteor') {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fill();
+            // Core of meteor
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius * 0.6, 0, Math.PI * 2);
+            ctx.fill();
+        } else {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
         ctx.shadowBlur = 0;
     }
 }
@@ -240,16 +262,38 @@ class PowerUp {
 
 class Boss {
     constructor() {
-        this.radius = 85;
-        this.color = '#ff0055';
-        this.glowColor = '#00f3ff';
         const diff = DIFFICULTY_CONFIG[currentDifficulty];
-        this.health = 80 * diff.bossHP * (1 + currentLevel * 0.2);
+        this.level = currentLevel;
+        this.health = 80 * diff.bossHP * (1 + this.level * 0.2);
         this.maxHealth = this.health;
         this.x = canvas.width / 2;
-        this.y = -this.radius;
         this.targetY = 120;
         this.vx = 2 * diff.speed;
+
+        // Define boss types based on level
+        const bossTypes = [
+            { name: 'Star', color: '#ff0055', glow: '#00f3ff', sides: 12, pattern: 'star' },
+            { name: 'Prism', color: '#0aff00', glow: '#ffffff', sides: 3, pattern: 'poly' },
+            { name: 'Meteor Lord', color: '#ff4400', glow: '#ffff00', sides: 8, pattern: 'rock' },
+            { name: 'Void Nova', color: '#bc13fe', glow: '#ff00ff', sides: 16, pattern: 'circle' }
+        ];
+
+        const typeIdx = Math.min(this.level - 1, bossTypes.length - 1);
+        const config = bossTypes[typeIdx];
+
+        this.radius = 85;
+        this.color = config.color;
+        this.glowColor = config.glow;
+        this.sides = config.sides;
+        this.pattern = config.pattern;
+        this.y = -this.radius;
+
+        // Custom behaviors based on level
+        if (this.level >= 5) {
+            // Randomize for high levels
+            this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            this.sides = Math.floor(Math.random() * 10) + 3;
+        }
     }
     update() {
         if (this.y < this.targetY) this.y += 1;
@@ -257,40 +301,87 @@ class Boss {
             this.x += this.vx;
             if (this.x < this.radius || this.x > canvas.width - this.radius) this.vx *= -1;
         }
-        if (isGameRunning && Math.random() < 0.08) {
+        if (isGameRunning && Math.random() < 0.1) {
             let target = players[Math.floor(Math.random() * players.length)];
             const bAngle = Math.atan2(target.y - this.y, target.x - this.x);
-            const powerType = Math.random();
-            if (powerType < 0.6) {
-                bullets.push(new Bullet(this.x, this.y, bAngle, '#ff0000', true));
-                bullets.push(new Bullet(this.x, this.y, bAngle + 0.2, '#ff0000', true));
-                bullets.push(new Bullet(this.x, this.y, bAngle - 0.2, '#ff0000', true));
-            } else if (powerType < 0.85) {
-                for (let i = 0; i < 12; i++) {
-                    const angle = (i / 12) * Math.PI * 2;
-                    bullets.push(new Bullet(this.x, this.y, angle, '#ff00ff', true));
-                }
-            } else {
-                const sniper = new Bullet(this.x, this.y, bAngle, '#ffffff', true);
-                sniper.velocity.x *= 1.5; sniper.velocity.y *= 1.5;
-                bullets.push(sniper);
+            let attackType = Math.random();
+
+            // Level-based attack weighting
+            if (this.level === 1) { // Lvl 1: Heavy Triple Shot
+                if (attackType < 0.7) this.fireTriple(bAngle);
+                else this.fireCircle();
+            } else if (this.level === 2) { // Lvl 2: Heavy Sniper
+                if (attackType < 0.6) this.fireSniper(bAngle);
+                else this.fireTriple(bAngle);
+            } else if (this.level === 3) { // Lvl 3: Heavy Meteor
+                if (attackType < 0.7) this.fireMeteors();
+                else this.fireCircle();
+            } else { // Lvl 4+: Mixed
+                if (attackType < 0.25) this.fireTriple(bAngle);
+                else if (attackType < 0.5) this.fireCircle();
+                else if (attackType < 0.75) this.fireMeteors();
+                else this.fireSniper(bAngle);
             }
         }
+    }
+
+    fireTriple(angle) {
+        bullets.push(new Bullet(this.x, this.y, angle, '#ff0000', true));
+        bullets.push(new Bullet(this.x, this.y, angle + 0.2, '#ff0000', true));
+        bullets.push(new Bullet(this.x, this.y, angle - 0.2, '#ff0000', true));
+    }
+
+    fireCircle() {
+        for (let i = 0; i < 12; i++) {
+            const angle = (i / 12) * Math.PI * 2;
+            bullets.push(new Bullet(this.x, this.y, angle, '#ff00ff', true));
+        }
+    }
+
+    fireMeteors() {
+        for (let i = 0; i < 3; i++) {
+            const spawnX = Math.random() * canvas.width;
+            const meteorAngle = Math.PI / 2 + (Math.random() - 0.5) * 0.5;
+            bullets.push(new Bullet(spawnX, -50, meteorAngle, '#ff4400', true, 25, false, 'meteor'));
+        }
+    }
+
+    fireSniper(angle) {
+        const sniper = new Bullet(this.x, this.y, angle, '#ffffff', true);
+        sniper.velocity.x *= 1.5; sniper.velocity.y *= 1.5;
+        bullets.push(sniper);
     }
     draw() {
         const barWidth = 150;
         ctx.fillStyle = '#333'; ctx.fillRect(this.x - barWidth / 2, this.y - this.radius - 20, barWidth, 10);
-        ctx.fillStyle = '#ff0000'; ctx.fillRect(this.x - barWidth / 2, this.y - this.radius - 20, (this.health / this.maxHealth) * barWidth, 10);
-        ctx.save(); ctx.shadowBlur = 30; ctx.shadowColor = this.glowColor; ctx.fillStyle = this.color;
+        ctx.fillStyle = (this.health / this.maxHealth) > 0.3 ? '#ff0000' : '#ffff00';
+        ctx.fillRect(this.x - barWidth / 2, this.y - this.radius - 20, (this.health / this.maxHealth) * barWidth, 10);
+
+        ctx.save();
+        ctx.shadowBlur = 30;
+        ctx.shadowColor = this.glowColor;
+        ctx.fillStyle = this.color;
+
         ctx.beginPath();
-        for (let i = 0; i < 12; i++) {
-            const angle = (i / 12) * Math.PI * 2;
-            const r = i % 2 === 0 ? this.radius : this.radius * 0.7;
-            const px = this.x + Math.cos(angle) * r;
-            const py = this.y + Math.sin(angle) * r;
-            if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        if (this.pattern === 'star') {
+            for (let i = 0; i < this.sides; i++) {
+                const angle = (i / this.sides) * Math.PI * 2;
+                const r = i % 2 === 0 ? this.radius : this.radius * 0.5;
+                const px = this.x + Math.cos(angle) * r;
+                const py = this.y + Math.sin(angle) * r;
+                if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            }
+        } else {
+            for (let i = 0; i < this.sides; i++) {
+                const angle = (i / this.sides) * Math.PI * 2;
+                const px = this.x + Math.cos(angle) * this.radius;
+                const py = this.y + Math.sin(angle) * this.radius;
+                if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            }
         }
-        ctx.closePath(); ctx.fill(); ctx.restore();
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
     }
 }
 
@@ -381,6 +472,14 @@ function applyPowerUp(id) {
 }
 
 function checkLevelProgress() {
+    // Level up every 10,000 points
+    const newLevel = Math.floor(score / 10000) + 1;
+    if (newLevel > currentLevel) {
+        currentLevel = newLevel;
+        levelEl.textContent = currentLevel;
+        showLevelOverlay();
+    }
+
     const diff = DIFFICULTY_CONFIG[currentDifficulty];
     if (score >= lastLevelScore + diff.pointsToBoss && bosses.length === 0) {
         bosses.push(new Boss());
@@ -448,10 +547,9 @@ function animate() {
                 if (boss.health <= 0) {
                     for (let i = 0; i < 50; i++) particles.push(new Particle(boss.x, boss.y, boss.glowColor));
                     score += 500;
-                    currentLevel++;
+                    scoreEl.textContent = score;
+                    checkLevelProgress();
                     lastLevelScore = score;
-                    levelEl.textContent = currentLevel;
-                    showLevelOverlay();
                     bosses.splice(index, 1);
                 }
                 bullets.splice(bIdx, 1);

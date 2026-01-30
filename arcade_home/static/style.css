@@ -4,6 +4,7 @@
     --neon-pink: #ff0055;
     --neon-green: #0aff00;
     --neon-purple: #bc13fe;
+    --neon-yellow: #ffff00;
 }
 
 body {
@@ -81,6 +82,11 @@ header p {
     box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
 }
 
+.game-card.racer {
+    border-color: var(--neon-yellow);
+    box-shadow: 0 0 15px rgba(255, 255, 0, 0.1);
+}
+
 .game-card:hover {
     transform: translateY(-20px) scale(1.02);
 }
@@ -114,6 +120,10 @@ header p {
     color: var(--neon-pink);
 }
 
+.game-card.racer .icon-container {
+    color: var(--neon-yellow);
+}
+
 .game-card:hover .icon-container {
     opacity: 0.6;
     transform: translate(-50%, -90%);
@@ -134,6 +144,10 @@ header p {
 
 .game-card.shooter:hover {
     box-shadow: 0 0 40px var(--neon-pink);
+}
+
+.game-card.racer:hover {
+    box-shadow: 0 0 40px var(--neon-yellow);
 }
 
 
@@ -166,6 +180,11 @@ header p {
 .game-card.hockey h2 {
     color: var(--neon-blue);
     text-shadow: 0 0 10px var(--neon-blue);
+}
+
+.game-card.racer h2 {
+    color: var(--neon-yellow);
+    text-shadow: 0 0 10px var(--neon-yellow);
 }
 
 .card-content p {
@@ -218,6 +237,16 @@ header p {
 .game-card.hockey .play-btn:hover {
     background: var(--neon-blue);
     border-color: var(--neon-blue);
+    color: black;
+}
+
+.game-card.racer .play-btn {
+    border-color: var(--neon-yellow);
+}
+
+.game-card.racer .play-btn:hover {
+    background: var(--neon-yellow);
+    border-color: var(--neon-yellow);
     color: black;
 }
 

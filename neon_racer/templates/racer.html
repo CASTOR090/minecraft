@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Racer</title>
+    <link rel="stylesheet" href="{{ url_for('racer.static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="game-container">
+        <a href="/" class="home-btn"><i class="fa-solid fa-house"></i> HOME</a>
+        <div class="ui-overlay">
+            <div class="score-board">
+                <div class="score-box">
+                    <span class="label">DISTANCE</span>
+                    <span id="score">0</span>m
+                </div>
+                <div class="score-box">
+                    <span class="label">SPEED</span>
+                    <span id="speed">0</span>km/h
+                </div>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="500" height="800"></canvas>
+
+        <div id="start-screen" class="overlay-screen">
+            <h1>NEON RACER</h1>
+            <p>Avoid the obstacles and drive as far as possible!</p>
+            <div class="mode-group">
+                <button class="mode-btn active" id="single-btn">SINGLE PLAYER</button>
+                <button class="mode-btn" id="multi-btn">MULTIPLAYER</button>
+            </div>
+            <div id="controls-p1" class="controls-info">
+                <span>P1: <i class="fa-solid fa-arrow-left"></i> A / <i class="fa-solid fa-arrow-right"></i> D</span>
+            </div>
+            <div id="controls-p2" class="controls-info hidden">
+                <span>P2: <i class="fa-solid fa-arrow-left"></i> <i class="fa-solid fa-arrow-right"></i> Arrows</span>
+            </div>
+            <button id="start-btn">START ENGINE</button>
+        </div>
+
+        <div id="game-over-screen" class="overlay-screen hidden">
+            <h1>CRASHED!</h1>
+            <p>Distance: <span id="final-score">0</span>m</p>
+            <button id="restart-btn">RETRY</button>
+        </div>
+    </div>
+    <script src="{{ url_for('racer.static', filename='script.js') }}"></script>
+</body>
+
+</html>

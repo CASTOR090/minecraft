@@ -9,7 +9,7 @@ const restartBtn = document.getElementById('restart-btn');
 const startBtn = document.getElementById('start-btn');
 
 const GRID_SIZE = 20;
-const TILE_COUNT = canvas.width / GRID_SIZE;
+let tileCount = canvas.width / GRID_SIZE;
 const GAME_SPEED = 100;
 
 let snake = [];
@@ -45,8 +45,8 @@ function initGame() {
 
 function spawnFood() {
     food = {
-        x: Math.floor(Math.random() * TILE_COUNT),
-        y: Math.floor(Math.random() * TILE_COUNT)
+        x: Math.floor(Math.random() * tileCount),
+        y: Math.floor(Math.random() * tileCount)
     };
     // Check if food spawns on snake
     if (snake.some(segment => segment.x === food.x && segment.y === food.y)) {
@@ -59,7 +59,7 @@ function update() {
     const head = { x: snake[0].x + velocity.x, y: snake[0].y + velocity.y };
 
     // Check collision with walls
-    if (head.x < 0 || head.x >= TILE_COUNT || head.y < 0 || head.y >= TILE_COUNT) {
+    if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
         gameOver();
         return;
     }
@@ -223,6 +223,21 @@ document.addEventListener('keydown', (e) => {
             if (velocity.x === 0) velocity = { x: 1, y: 0 };
             break;
     }
+});
+
+// Map Size Logic
+const sizeButtons = document.querySelectorAll('.size-btn');
+sizeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        sizeButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const newSize = parseInt(btn.dataset.size);
+        canvas.width = newSize;
+        canvas.height = newSize;
+        tileCount = canvas.width / GRID_SIZE;
+        initGame();
+        draw();
+    });
 });
 
 restartBtn.addEventListener('click', startGame);

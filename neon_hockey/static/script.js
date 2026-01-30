@@ -100,20 +100,20 @@ function update() {
 
     // AI or P2 movement
     if (gameMode === 'multi') {
-        if (keys['w']) p2.y -= 12;
-        if (keys['s']) p2.y += 12;
-        if (keys['a']) p2.x -= 12;
-        if (keys['d']) p2.x += 12;
+        if (keys['w']) p2.y -= 25;
+        if (keys['s']) p2.y += 25;
+        if (keys['a']) p2.x -= 25;
+        if (keys['d']) p2.x += 25;
     } else {
-        // Simple AI
+        // Simple AI - now much faster and more abrupt
         let dx = puck.x - p2.x;
         let dy = puck.y - p2.y;
         if (puck.y < canvas.height / 2) {
-            p2.x += dx * 0.1;
-            p2.y += (puck.y - 100 - p2.y) * 0.1;
+            p2.x += dx * 0.35;
+            p2.y += (puck.y - 100 - p2.y) * 0.35;
         } else {
-            p2.x += (canvas.width / 2 - p2.x) * 0.05;
-            p2.y += (100 - p2.y) * 0.05;
+            p2.x += (canvas.width / 2 - p2.x) * 0.2;
+            p2.y += (100 - p2.y) * 0.2;
         }
     }
 
@@ -129,9 +129,19 @@ function update() {
 
         // If idle for more than 3 seconds (180 frames)
         if (p.idleFrames > 180) {
-            // Apply slight random movement or move towards puck
-            p.x += (Math.random() - 0.5) * 10;
-            p.y += (Math.random() - 0.5) * 10;
+            // Extremamente brusco e direcional
+            if (p === p1) {
+                // Azul (P1) joga para a DIREITA
+                p.x += 150;
+                p.y += (Math.random() - 0.5) * 50;
+            } else {
+                // Vermelho (P2) joga para a ESQUERDA
+                p.x -= 150;
+                p.y += (Math.random() - 0.5) * 50;
+            }
+
+            // Força um movimento contínuo e caótico
+            p.idleFrames -= 30;
         }
     });
 
@@ -209,9 +219,9 @@ function checkPaddleCollision(paddle) {
         puck.x += nx * overlap;
         puck.y += ny * overlap;
 
-        // Bounce physics with higher power
-        puck.vx = nx * 14;
-        puck.vy = ny * 14;
+        // Bounce physics with MUCH higher power for abrupt movement
+        puck.vx = nx * 30;
+        puck.vy = ny * 30;
     }
 }
 
@@ -290,12 +300,10 @@ function animate() {
 }
 
 soloBtn.addEventListener('click', () => {
-    p2NameInput.classList.add('hidden');
     startGame('solo');
 });
 
 multiBtn.addEventListener('click', () => {
-    p2NameInput.classList.remove('hidden');
     startGame('multi');
 });
 

@@ -63,7 +63,7 @@ canvas {
 
 .ui-overlay {
     position: absolute;
-    top: 20px;
+    top: -85px;
     left: 0;
     width: 100%;
     pointer-events: none;

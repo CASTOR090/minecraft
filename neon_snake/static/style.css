@@ -62,7 +62,7 @@ canvas {
 
 .ui-overlay {
     position: absolute;
-    top: 20px;
+    top: -85px;
     left: 0;
     width: 100%;
     pointer-events: none;
@@ -161,4 +161,27 @@ button:hover {
     background: var(--neon-green);
     color: black;
     box-shadow: 0 0 30px var(--neon-green);
+}
+
+.map-size-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.size-btn {
+    padding: 10px 15px;
+    font-size: 0.8em;
+    margin-top: 0;
+    opacity: 0.6;
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 5px var(--neon-purple);
+}
+
+.size-btn.active {
+    opacity: 1;
+    background: var(--neon-purple);
+    color: #000;
+    box-shadow: 0 0 15px var(--neon-purple);
 }
