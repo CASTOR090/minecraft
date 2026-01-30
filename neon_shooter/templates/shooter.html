@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neon Shooter</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('shooter.static', filename='style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body>
     <div class="game-container">
-        <a href="http://127.0.0.1:8000" class="home-btn"><i class="fa-solid fa-house"></i> HOME</a>
+        <a href="/" class="home-btn"><i class="fa-solid fa-house"></i> HOME</a>
         <div class="ui-overlay">
             <div class="score-board">
                 <div class="score-box">
@@ -43,7 +43,12 @@
                 <button class="diff-btn" data-diff="hard">HARD</button>
                 <button class="diff-btn" data-diff="extreme">EXTREME</button>
             </div>
-            <p style="margin-top: 20px; font-size: 0.8em; color: #888;">WASD to Move | Mouse to Aim & Shoot</p>
+            <div class="mode-group" style="margin-bottom: 20px;">
+                <button class="mode-btn active" data-mode="single">SINGLE PLAYER</button>
+                <button class="mode-btn" data-mode="multi">MULTIPLAYER (LOCAL)</button>
+            </div>
+            <p id="controls-hint" style="margin-top: 20px; font-size: 0.8em; color: #888;">WASD to Move | Mouse to Aim &
+                Shoot</p>
             <button id="start-btn">START MISSION</button>
         </div>
 
@@ -53,7 +58,7 @@
             <button id="restart-btn">RETRY</button>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('shooter.static', filename='script.js') }}"></script>
 </body>
 
 </html>

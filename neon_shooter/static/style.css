@@ -163,6 +163,28 @@ button:hover {
     box-shadow: 0 0 15px var(--neon-blue);
 }
 
+.mode-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.mode-btn {
+    padding: 10px 15px;
+    font-size: 0.8em;
+    margin-top: 0;
+    opacity: 0.6;
+    border-color: var(--neon-pink);
+}
+
+.mode-btn.active {
+    opacity: 1;
+    background: var(--neon-pink);
+    color: #000;
+    box-shadow: 0 0 15px var(--neon-pink);
+}
+
 .level-notification {
     position: absolute;
     top: 50%;

@@ -13,14 +13,15 @@ const diffButtons = document.querySelectorAll('.diff-btn');
 
 // Game State
 let isGameRunning = false;
+let isMultiplayer = false;
 let score = 0;
 let highScore = 0;
 let currentLevel = 1;
 let currentDifficulty = 'medium';
-let player, bullets, enemies, particles, powerUps, bosses, animationId;
+let players = [];
+let bullets, enemies, particles, powerUps, bosses, animationId;
 let keys = {};
 let mouse = { x: 0, y: 0 };
-let shootTimer = 0;
 let lastLevelScore = 0;
 
 const DIFFICULTY_CONFIG = {
@@ -41,27 +42,80 @@ let activeEffects = {
 };
 
 class Player {
-    constructor() {
-        this.x = canvas.width / 2;
-        this.y = canvas.height / 2;
+    constructor(x, y, color, controls) {
+        this.x = x;
+        this.y = y;
         this.radius = 15;
-        this.color = '#00f3ff';
+        this.color = color;
         this.baseSpeed = 5;
         this.angle = 0;
+        this.controls = controls;
+        this.shootTimer = 0;
+        this.effects = {
+            rapidFire: 0,
+            multiShot: 0,
+            shield: 0,
+            piercing: 0,
+            bigBullets: 0,
+            speedBoost: 0
+        };
     }
 
     update() {
         let speed = this.baseSpeed;
-        if (activeEffects.speedBoost > 0) speed *= 1.8;
+        if (this.effects.speedBoost > 0) speed *= 1.8;
 
-        if (keys['w']) this.y -= speed;
-        if (keys['s']) this.y += speed;
-        if (keys['a']) this.x -= speed;
-        if (keys['d']) this.x += speed;
+        if (keys[this.controls.up]) this.y -= speed;
+        if (keys[this.controls.down]) this.y += speed;
+        if (keys[this.controls.left]) this.x -= speed;
+        if (keys[this.controls.right]) this.x += speed;
 
         this.x = Math.max(this.radius, Math.min(canvas.width - this.radius, this.x));
         this.y = Math.max(this.radius, Math.min(canvas.height - this.radius, this.y));
-        this.angle = Math.atan2(mouse.y - this.y, mouse.x - this.x);
+
+        if (this.controls.useMouse) {
+            this.angle = Math.atan2(mouse.y - this.y, mouse.x - this.x);
+        } else {
+            // For keyboard only player, aim in movement direction
+            if (keys[this.controls.up] || keys[this.controls.down] || keys[this.controls.left] || keys[this.controls.right]) {
+                let vx = 0, vy = 0;
+                if (keys[this.controls.up]) vy -= 1;
+                if (keys[this.controls.down]) vy += 1;
+                if (keys[this.controls.left]) vx -= 1;
+                if (keys[this.controls.right]) vx += 1;
+                if (vx !== 0 || vy !== 0) this.angle = Math.atan2(vy, vx);
+            }
+        }
+
+        // Update effects
+        Object.keys(this.effects).forEach(k => {
+            if (this.effects[k] > 0) this.effects[k]--;
+        });
+
+        this.handleShooting();
+    }
+
+    handleShooting() {
+        this.shootTimer--;
+        let isShooting = this.controls.useMouse ? keys.mousedown : keys[this.controls.shoot];
+
+        if (isShooting && this.shootTimer <= 0) {
+            this.shootTimer = this.effects.rapidFire > 0 ? 3 : 10;
+            const bulletColor = this.effects.piercing > 0 ? '#0aff00' : '#ffff00';
+            const bulletRadius = this.effects.bigBullets > 0 ? 10 : 4;
+
+            if (this.effects.multiShot > 0) {
+                this.fireBullet(this.angle, bulletColor, bulletRadius);
+                this.fireBullet(this.angle + 0.3, bulletColor, bulletRadius);
+                this.fireBullet(this.angle - 0.3, bulletColor, bulletRadius);
+            } else {
+                this.fireBullet(this.angle, bulletColor, bulletRadius);
+            }
+        }
+    }
+
+    fireBullet(angle, color, radius) {
+        bullets.push(new Bullet(this.x, this.y, angle, color, false, radius, this.effects.piercing > 0));
     }
 
     draw() {
@@ -70,7 +124,7 @@ class Player {
         ctx.rotate(this.angle);
         ctx.shadowBlur = 15;
         ctx.shadowColor = this.color;
-        if (activeEffects.shield > 0) {
+        if (this.effects.shield > 0) {
             ctx.strokeStyle = '#fff';
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -88,12 +142,13 @@ class Player {
 }
 
 class Bullet {
-    constructor(x, y, angle, color = '#ffff00', isEnemy = false) {
+    constructor(x, y, angle, color = '#ffff00', isEnemy = false, radius = 4, isPiercing = false) {
         this.x = x;
         this.y = y;
-        this.radius = activeEffects.bigBullets > 0 && !isEnemy ? 10 : 4;
-        this.color = activeEffects.piercing > 0 && !isEnemy ? '#0aff00' : color;
+        this.radius = radius;
+        this.color = color;
         this.isEnemy = isEnemy;
+        this.isPiercing = isPiercing;
         const speedMult = DIFFICULTY_CONFIG[currentDifficulty].speed;
         this.velocity = {
             x: Math.cos(angle) * (isEnemy ? 10 * speedMult : 28),
@@ -130,7 +185,14 @@ class Enemy {
                 this.y = Math.random() < 0.5 ? -this.radius : canvas.height + this.radius;
             }
         }
-        const angle = Math.atan2(player.y - this.y, player.x - this.x);
+        // Target nearest player
+        let target = players[0];
+        if (players.length > 1) {
+            const d1 = Math.hypot(this.x - players[0].x, this.y - players[0].y);
+            const d2 = Math.hypot(this.x - players[1].x, this.y - players[1].y);
+            if (d2 < d1) target = players[1];
+        }
+        const angle = Math.atan2(target.y - this.y, target.x - this.x);
         this.velocity = { x: Math.cos(angle) * this.speed, y: Math.sin(angle) * this.speed };
     }
     update() { this.x += this.velocity.x; this.y += this.velocity.y; }
@@ -196,7 +258,8 @@ class Boss {
             if (this.x < this.radius || this.x > canvas.width - this.radius) this.vx *= -1;
         }
         if (isGameRunning && Math.random() < 0.08) {
-            const bAngle = Math.atan2(player.y - this.y, player.x - this.x);
+            let target = players[Math.floor(Math.random() * players.length)];
+            const bAngle = Math.atan2(target.y - this.y, target.x - this.x);
             const powerType = Math.random();
             if (powerType < 0.6) {
                 bullets.push(new Bullet(this.x, this.y, bAngle, '#ff0000', true));
@@ -243,12 +306,21 @@ class Particle {
 }
 
 function init() {
-    player = new Player();
+    players = [];
+    players.push(new Player(canvas.width / 4, canvas.height / 2, '#00f3ff', {
+        up: 'w', down: 's', left: 'a', right: 'd', useMouse: true
+    }));
+
+    if (isMultiplayer) {
+        players.push(new Player(3 * canvas.width / 4, canvas.height / 2, '#ff0055', {
+            up: 'arrowup', down: 'arrowdown', left: 'arrowleft', right: 'arrowright', shoot: 'shift', useMouse: false
+        }));
+    }
+
     bullets = []; enemies = []; particles = []; powerUps = []; bosses = [];
     score = 0; lastLevelScore = 0; currentLevel = 1;
     scoreEl.textContent = score;
     levelEl.textContent = currentLevel;
-    Object.keys(activeEffects).forEach(k => activeEffects[k] = 0);
 }
 
 function showLevelOverlay() {
@@ -318,17 +390,26 @@ function animate() {
     animationId = requestAnimationFrame(animate);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    player.update(); player.draw(); handleShooting();
-    Object.keys(activeEffects).forEach(k => { if (activeEffects[k] > 0) activeEffects[k]--; });
+    players.forEach(p => {
+        p.update();
+        p.draw();
+    });
 
     powerUps.forEach((pu, index) => {
         pu.draw();
-        if (Math.hypot(player.x - pu.x, player.y - pu.y) < player.radius + pu.radius) {
-            applyPowerUp(pu.id); powerUps.splice(index, 1);
-        }
+        players.forEach(player => {
+            if (Math.hypot(player.x - pu.x, player.y - pu.y) < player.radius + pu.radius) {
+                applyPowerUp(pu.id, player); powerUps.splice(index, 1);
+            }
+        });
         bullets.forEach((bullet, bIdx) => {
             if (Math.hypot(bullet.x - pu.x, bullet.y - pu.y) < bullet.radius + pu.radius) {
-                applyPowerUp(pu.id);
+                // If a bullet hits it, give benefit to a random player? Or nearest?
+                let nearest = players[0];
+                players.forEach(p => {
+                    if (Math.hypot(p.x - pu.x, p.y - pu.y) < Math.hypot(nearest.x - pu.x, nearest.y - pu.y)) nearest = p;
+                });
+                applyPowerUp(pu.id, nearest);
                 for (let i = 0; i < 10; i++) particles.push(new Particle(pu.x, pu.y, pu.color));
                 powerUps.splice(index, 1); bullets.splice(bIdx, 1);
             }
@@ -340,20 +421,24 @@ function animate() {
     bullets.forEach((bullet, bIdx) => {
         bullet.update(); bullet.draw();
         if (bullet.isEnemy) {
-            if (Math.hypot(player.x - bullet.x, player.y - bullet.y) < player.radius + bullet.radius) {
-                if (activeEffects.shield > 0) { activeEffects.shield = 0; bullets.splice(bIdx, 1); }
-                else gameOver();
-            }
+            players.forEach(player => {
+                if (Math.hypot(player.x - bullet.x, player.y - bullet.y) < player.radius + bullet.radius) {
+                    if (player.effects.shield > 0) { player.effects.shield = 0; bullets.splice(bIdx, 1); }
+                    else gameOver();
+                }
+            });
         }
         if (bullet.x < 0 || bullet.x > canvas.width || bullet.y < 0 || bullet.y > canvas.height) bullets.splice(bIdx, 1);
     });
 
     bosses.forEach((boss, index) => {
         boss.update(); boss.draw();
-        if (Math.hypot(player.x - boss.x, player.y - boss.y) < player.radius + boss.radius) {
-            if (activeEffects.shield > 0) { activeEffects.shield = 0; boss.y -= 20; }
-            else gameOver();
-        }
+        players.forEach(player => {
+            if (Math.hypot(player.x - boss.x, player.y - boss.y) < player.radius + boss.radius) {
+                if (player.effects.shield > 0) { player.effects.shield = 0; boss.y -= 20; }
+                else gameOver();
+            }
+        });
         bullets.forEach((bullet, bIdx) => {
             if (Math.hypot(bullet.x - boss.x, bullet.y - boss.y) < bullet.radius + boss.radius) {
                 boss.health--;
@@ -374,10 +459,12 @@ function animate() {
 
     enemies.forEach((enemy, eIdx) => {
         enemy.update(); enemy.draw();
-        if (Math.hypot(player.x - enemy.x, player.y - enemy.y) < player.radius + enemy.radius) {
-            if (activeEffects.shield > 0) { enemies.splice(eIdx, 1); activeEffects.shield = 0; }
-            else gameOver();
-        }
+        players.forEach(player => {
+            if (Math.hypot(player.x - enemy.x, player.y - enemy.y) < player.radius + enemy.radius) {
+                if (player.effects.shield > 0) { enemies.splice(eIdx, 1); player.effects.shield = 0; }
+                else gameOver();
+            }
+        });
         bullets.forEach((bullet, bIdx) => {
             if (Math.hypot(bullet.x - enemy.x, bullet.y - enemy.y) < bullet.radius + enemy.radius) {
                 if (enemy.tier > 1) {
@@ -388,7 +475,7 @@ function animate() {
                 score += 10; scoreEl.textContent = score;
                 checkLevelProgress();
                 enemies.splice(eIdx, 1);
-                if (activeEffects.piercing === 0) bullets.splice(bIdx, 1);
+                if (!bullet.isPiercing) bullets.splice(bIdx, 1);
             }
         });
     });
@@ -400,6 +487,45 @@ function gameOver() {
     finalScoreEl.textContent = score;
     if (score > highScore) { highScore = score; highScoreEl.textContent = highScore; }
 }
+
+const modeButtons = document.querySelectorAll('.mode-btn');
+const controlsHint = document.getElementById('controls-hint');
+
+modeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        modeButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        isMultiplayer = btn.dataset.mode === 'multi';
+        controlsHint.innerHTML = isMultiplayer
+            ? "P1: WASD + Mouse | P2: Arrows + Shift"
+            : "WASD to Move | Mouse to Aim & Shoot";
+    });
+});
+
+function applyPowerUp(id, targetPlayer) {
+    if (id === 'nuke') {
+        enemies.forEach(e => { for (let i = 0; i < 10; i++) particles.push(new Particle(e.x, e.y, e.color)); });
+        score += enemies.length * 10; enemies = [];
+    } else if (id === 'freeze') {
+        enemies.forEach(e => { e.velocity.x = 0; e.velocity.y = 0; });
+    } else if (id === 'bonus') {
+        score += 500;
+    } else {
+        targetPlayer.effects[id] = 600;
+    }
+    checkLevelProgress();
+    scoreEl.textContent = score;
+}
+
+startBtn.addEventListener('click', () => {
+    startScreen.classList.add('hidden');
+    isGameRunning = true; init(); animate(); spawnEnemies(); spawnPowerUp(); showLevelOverlay();
+});
+
+restartBtn.addEventListener('click', () => {
+    gameOverScreen.classList.add('hidden');
+    isGameRunning = true; init(); animate(); spawnEnemies(); spawnPowerUp(); showLevelOverlay();
+});
 
 diffButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -417,13 +543,3 @@ window.addEventListener('mousemove', e => {
 });
 window.addEventListener('mousedown', () => keys.mousedown = true);
 window.addEventListener('mouseup', () => keys.mousedown = false);
-
-startBtn.addEventListener('click', () => {
-    startScreen.classList.add('hidden');
-    isGameRunning = true; init(); animate(); spawnEnemies(); spawnPowerUp(); showLevelOverlay();
-});
-
-restartBtn.addEventListener('click', () => {
-    gameOverScreen.classList.add('hidden');
-    isGameRunning = true; init(); animate(); spawnEnemies(); spawnPowerUp(); showLevelOverlay();
-});
