@@ -307,13 +307,15 @@ class Particle {
 
 function init() {
     players = [];
+    // Player 1 (Blue) - Now using Arrows + Mouse
     players.push(new Player(canvas.width / 4, canvas.height / 2, '#00f3ff', {
-        up: 'w', down: 's', left: 'a', right: 'd', useMouse: true
+        up: 'arrowup', down: 'arrowdown', left: 'arrowleft', right: 'arrowright', useMouse: true
     }));
 
     if (isMultiplayer) {
+        // Player 2 (Red) - Now using WASD + Space
         players.push(new Player(3 * canvas.width / 4, canvas.height / 2, '#ff0055', {
-            up: 'arrowup', down: 'arrowdown', left: 'arrowleft', right: 'arrowright', shoot: 'shift', useMouse: false
+            up: 'w', down: 's', left: 'a', right: 'd', shoot: ' ', useMouse: false
         }));
     }
 
@@ -497,8 +499,8 @@ modeButtons.forEach(btn => {
         btn.classList.add('active');
         isMultiplayer = btn.dataset.mode === 'multi';
         controlsHint.innerHTML = isMultiplayer
-            ? "P1: WASD + Mouse | P2: Arrows + Shift"
-            : "WASD to Move | Mouse to Aim & Shoot";
+            ? "P1 (Blue): Arrows + Mouse | P2 (Red): WASD + Space"
+            : "Arrows to Move | Mouse to Aim & Shoot";
     });
 });
 
