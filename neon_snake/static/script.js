@@ -192,9 +192,8 @@ function startGame() {
 // Controls
 document.addEventListener('keydown', (e) => {
     if (!isGameRunning) {
-        if (!gameOverScreen.classList.contains('hidden') && e.key === 'Enter') { // Allow restarting with enter
-            startGame();
-        } else if (!startScreen.classList.contains('hidden') && e.key === 'Enter') {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
             startGame();
         }
         return;

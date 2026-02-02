@@ -87,6 +87,11 @@ header p {
     box-shadow: 0 0 15px rgba(255, 255, 0, 0.1);
 }
 
+.game-card.jumper {
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 15px rgba(188, 19, 254, 0.1);
+}
+
 .game-card:hover {
     transform: translateY(-20px) scale(1.02);
 }
@@ -124,6 +129,10 @@ header p {
     color: var(--neon-yellow);
 }
 
+.game-card.jumper .icon-container {
+    color: var(--neon-purple);
+}
+
 .game-card:hover .icon-container {
     opacity: 0.6;
     transform: translate(-50%, -90%);
@@ -148,6 +157,10 @@ header p {
 
 .game-card.racer:hover {
     box-shadow: 0 0 40px var(--neon-yellow);
+}
+
+.game-card.jumper:hover {
+    box-shadow: 0 0 40px var(--neon-purple);
 }
 
 
@@ -185,6 +198,11 @@ header p {
 .game-card.racer h2 {
     color: var(--neon-yellow);
     text-shadow: 0 0 10px var(--neon-yellow);
+}
+
+.game-card.jumper h2 {
+    color: var(--neon-purple);
+    text-shadow: 0 0 10px var(--neon-purple);
 }
 
 .card-content p {
@@ -248,6 +266,16 @@ header p {
     background: var(--neon-yellow);
     border-color: var(--neon-yellow);
     color: black;
+}
+
+.game-card.jumper .play-btn {
+    border-color: var(--neon-purple);
+}
+
+.game-card.jumper .play-btn:hover {
+    background: var(--neon-purple);
+    border-color: var(--neon-purple);
+    color: white;
 }
 
 footer {

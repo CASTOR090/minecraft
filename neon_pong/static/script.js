@@ -85,7 +85,14 @@ canvas.addEventListener('mousemove', (e) => {
     player.y = e.clientY - rect.top - player.h / 2;
 });
 
-window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
+window.addEventListener('keydown', (e) => {
+    keys[e.key.toLowerCase()] = true;
+
+    if (!isGameRunning && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        startGame('solo');
+    }
+});
 window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
 
 function startGame(mode) {

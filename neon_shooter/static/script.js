@@ -635,7 +635,25 @@ diffButtons.forEach(btn => {
     });
 });
 
-window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+window.addEventListener('keydown', e => {
+    keys[e.key.toLowerCase()] = true;
+
+    if (!isGameRunning && (e.key === 'Enter' || e.key === ' ')) {
+        const isGameOver = !gameOverScreen.classList.contains('hidden');
+        if (isGameOver) {
+            gameOverScreen.classList.add('hidden');
+        } else {
+            startScreen.classList.add('hidden');
+        }
+        e.preventDefault();
+        isGameRunning = true;
+        init();
+        animate();
+        spawnEnemies();
+        spawnPowerUp();
+        showLevelOverlay();
+    }
+});
 window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
 window.addEventListener('mousemove', e => {
     const rect = canvas.getBoundingClientRect();

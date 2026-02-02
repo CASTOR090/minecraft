@@ -201,19 +201,30 @@ function init() {
 function spawnObstacle() {
     if (!isGameRunning) return;
 
-    // Randomly spawn in multiple lanes
+    // Progressive difficulty for multi-lane spawning
     const chance = Math.random();
-    if (chance < 0.3) { // 30% chance for double obstacles
+    const doubleChance = 0.3 + (score / 1500); // Increases 10% every 150 points
+    const tripleChance = score > 1000 ? (score - 1000) / 4000 : 0; // Starts appearing after 1000 points
+
+    if (chance < tripleChance) {
+        // Triple obstacle - very hard!
+        obstacles.push(new Obstacle(0));
+        obstacles.push(new Obstacle(1));
+        obstacles.push(new Obstacle(2));
+    } else if (chance < doubleChance) {
+        // Double obstacle
         const lane1 = Math.floor(Math.random() * 3);
         let lane2 = Math.floor(Math.random() * 3);
         while (lane2 === lane1) lane2 = Math.floor(Math.random() * 3);
         obstacles.push(new Obstacle(lane1));
         obstacles.push(new Obstacle(lane2));
     } else {
+        // Single obstacle
         obstacles.push(new Obstacle());
     }
 
-    const timeout = Math.max(300, 1500 - (score / 80)); // Faster spawning
+    // Spawn rate increases much faster now
+    const timeout = Math.max(180, 1500 - (score * 0.45));
     setTimeout(spawnObstacle, timeout);
 }
 
@@ -303,7 +314,9 @@ function animate() {
             obstacles.splice(i, 1);
             score += 10;
             scoreEl.textContent = score;
-            gameSpeed += 0.2; // Even faster acceleration
+
+            // Increased acceleration: Base 0.25 + extra based on current speed to make it exponential-ish
+            gameSpeed += 0.25 + (gameSpeed * 0.01);
             speedEl.textContent = Math.floor(gameSpeed * 20);
         }
     }
@@ -319,7 +332,22 @@ function gameOver() {
 }
 
 window.addEventListener('keydown', (e) => {
-    if (!isGameRunning) return;
+    if (!isGameRunning) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            const isGameOver = !gameOverScreen.classList.contains('hidden');
+            if (isGameOver) {
+                gameOverScreen.classList.add('hidden');
+            } else {
+                startScreen.classList.add('hidden');
+            }
+            e.preventDefault();
+            isGameRunning = true;
+            init();
+            animate();
+            spawnObstacle();
+        }
+        return;
+    }
 
     // Player 1 Controls (A/D)
     if (e.key.toLowerCase() === 'a') {

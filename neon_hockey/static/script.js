@@ -66,7 +66,14 @@ window.addEventListener('mousemove', (e) => {
     p1.y = mouseY;
 });
 
-window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
+window.addEventListener('keydown', (e) => {
+    keys[e.key.toLowerCase()] = true;
+
+    if (!isGameRunning && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        startGame('solo');
+    }
+});
 window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
 
 function startGame(mode) {

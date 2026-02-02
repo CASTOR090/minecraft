@@ -11,6 +11,7 @@ from neon_pong.routes import pong_bp
 from neon_hockey.routes import hockey_bp
 from neon_shooter.routes import shooter_bp
 from neon_racer.routes import racer_bp
+from neon_jumper.routes import jumper_bp
 
 app = Flask(__name__)
 
@@ -21,6 +22,7 @@ app.register_blueprint(pong_bp, url_prefix='/pong')
 app.register_blueprint(hockey_bp, url_prefix='/hockey')
 app.register_blueprint(shooter_bp, url_prefix='/shooter')
 app.register_blueprint(racer_bp, url_prefix='/racer')
+app.register_blueprint(jumper_bp, url_prefix='/jumper')
 
 if __name__ == '__main__':
     print("Iniciando Super Arcade na porta 8080...")
