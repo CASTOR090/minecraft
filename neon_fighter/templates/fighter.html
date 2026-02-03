@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Kombat</title>
+    <link rel="stylesheet" href="{{ url_for('fighter.static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="game-container" id="game-container">
+        <a href="/" class="home-btn"><i class="fa-solid fa-house"></i> HOME</a>
+
+        <div class="health-bars">
+            <div class="p1-stats">
+                <div class="name">NEON-ZERO</div>
+                <div class="health-container">
+                    <div id="p1-health" class="health-fill p1-color"></div>
+                </div>
+            </div>
+            <div class="timer" id="timer">∞</div>
+            <div class="p2-stats">
+                <div class="name">STINGER</div>
+                <div class="health-container">
+                    <div id="p2-health" class="health-fill p2-color"></div>
+                </div>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+        <div id="finish-him" class="hidden">FINISH HIM!</div>
+
+        <div id="char-select-screen" class="overlay hidden">
+            <h1>SELECT YOUR FIGHTER</h1>
+            <div class="selection-container">
+                <div class="p1-selection">
+                    <h3>PLAYER 1</h3>
+                    <div class="char-grid" id="p1-grid">
+                        <div class="char-icon active" data-char="neonzero" data-color="#00f3ff">NEON-ZERO</div>
+                        <div class="char-icon" data-char="stinger" data-color="#ffcc00">STINGER</div>
+                        <div class="char-icon" data-char="hexbot" data-color="#00ff00">HEX-BOT</div>
+                        <div class="char-icon" data-char="soulgrid" data-color="#ff0000">SOUL-GRID</div>
+                    </div>
+                </div>
+                <div class="p2-selection">
+                    <h3>PLAYER 2</h3>
+                    <div class="char-grid" id="p2-grid">
+                        <div class="char-icon" data-char="neonzero" data-color="#00f3ff">NEON-ZERO</div>
+                        <div class="char-icon active" data-char="stinger" data-color="#ffcc00">STINGER</div>
+                        <div class="char-icon" data-char="hexbot" data-color="#00ff00">HEX-BOT</div>
+                        <div class="char-icon" data-char="soulgrid" data-color="#ff0000">SOUL-GRID</div>
+                    </div>
+                </div>
+            </div>
+            <p style="margin-top: 15px; font-size: 10px; color: var(--mk-gold);">SPECIAL MOVES: BAILXO + FRENTE + ATAQUE
+            </p>
+            <button id="confirm-select-btn">READY TO FIGHT</button>
+        </div>
+
+        <div id="start-screen" class="overlay">
+            <h1>NEON KOMBAT</h1>
+            <p>CHOOSE YOUR DESTINY</p>
+            <div class="controls-grid">
+                <div class="p1-controls">
+                    <h3>P1: BLUE</h3>
+                    <p><span class="key">W</span> <span class="key">A</span> <span class="key">D</span> (Move/Jump)</p>
+                    <p><span class="key">S</span> (Punch) | <span class="key">X</span> (Kick)</p>
+                </div>
+                <div class="p2-controls">
+                    <h3>P2: GOLD</h3>
+                    <p><span class="key">▲</span> <span class="key">◄</span> <span class="key">►</span> (Move/Jump)</p>
+                    <p><span class="key">▼</span> (Punch) | <span class="key">L</span> (Kick)</p>
+                </div>
+            </div>
+            <button id="start-btn">CHOOSE CHARACTER</button>
+        </div>
+
+        <div id="win-screen" class="overlay hidden">
+            <h1 id="win-text" class="fatality-text">FATALITY</h1>
+            <p id="winner-banner">PLAYER 1 WINS</p>
+            <button id="restart-btn">REMATCH</button>
+        </div>
+
+        <div class="movelist-guide">
+            <div class="guide-item"><span class="guide-name">P1:</span> <span class="key">S</span>+<span
+                    class="key">D</span> (Poder) | <span class="key">S</span>+<span class="key">S</span>+<span
+                    class="key">S</span> (Fatality)</div>
+            <div class="guide-item"><span class="guide-name">P2:</span> <span class="key">▼</span>+<span
+                    class="key">►</span> (Poder) | <span class="key">▼</span>+<span class="key">▼</span>+<span
+                    class="key">▼</span> (Fatality)</div>
+        </div>
+    </div>
+    <script src="{{ url_for('fighter.static', filename='script.js') }}"></script>
+</body>
+
+</html>

@@ -28,8 +28,35 @@ body {
     height: 600px;
     border-radius: 20px;
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(188, 19, 254, 0.2);
-    overflow: hidden;
+    overflow: visible;
+    /* Changed to visible to show home button */
     background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0c 100%);
+    margin-top: 60px;
+    /* Space for the button */
+}
+
+.home-btn {
+    position: absolute;
+    top: -60px;
+    left: 0;
+    color: var(--neon-cyan);
+    text-decoration: none;
+    font-size: 0.9em;
+    border: 1px solid var(--neon-cyan);
+    padding: 8px 15px;
+    border-radius: 5px;
+    background: rgba(0, 243, 255, 0.05);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 100;
+}
+
+.home-btn:hover {
+    background: var(--neon-cyan);
+    color: black;
+    box-shadow: 0 0 15px var(--neon-cyan);
 }
 
 canvas {
@@ -137,6 +164,27 @@ button {
     text-transform: uppercase;
     letter-spacing: 2px;
     box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+.mode-selection {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.mode-btn {
+    padding: 10px 20px;
+    font-size: 12px;
+    opacity: 0.5;
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 10px rgba(188, 19, 254, 0.2);
+}
+
+.mode-btn.active {
+    opacity: 1;
+    background: var(--neon-purple);
+    color: white;
+    box-shadow: 0 0 20px var(--neon-purple);
 }
 
 button:hover {

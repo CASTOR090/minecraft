@@ -7,10 +7,12 @@
     <title>Neon Jumper</title>
     <link rel="stylesheet" href="{{ url_for('jumper.static', filename='style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body>
     <div class="game-container">
+        <a href="/" class="home-btn"><i class="fa-solid fa-house"></i> HOME</a>
         <div class="hud">
             <div class="score-box">SCORE: <span id="score">0</span></div>
             <div class="high-score-box">BEST: <span id="high-score">0</span></div>
@@ -22,9 +24,13 @@
         <div id="start-screen" class="overlay">
             <h1>NEON JUMPER</h1>
             <p>Jump as high as you can!</p>
+            <div class="mode-selection">
+                <button class="mode-btn active" id="single-btn">SINGLE</button>
+                <button class="mode-btn" id="multi-btn">CO-OP</button>
+            </div>
             <div class="controls">
-                <p><span class="key">←</span> <span class="key">→</span> or <span class="key">A</span> <span
-                        class="key">D</span> to Move</p>
+                <p id="p1-controls">P1: <span class="key">←</span> <span class="key">→</span> to Move</p>
+                <p id="p2-controls" class="hidden">P2: <span class="key">A</span> <span class="key">D</span> to Move</p>
                 <p><span class="key">ENTER</span> or <span class="key">SPACE</span> to Start</p>
             </div>
             <button id="start-btn">START MISSION</button>
@@ -37,7 +43,6 @@
             <button id="restart-btn">REBOOT SYSTEM</button>
         </div>
 
-        <a href="/" class="back-link">BACK TO ARCADE</a>
     </div>
     <script src="{{ url_for('jumper.static', filename='script.js') }}"></script>
 </body>
