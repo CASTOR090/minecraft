@@ -92,6 +92,7 @@ class Sprite {
             height: 50
         };
         this.isAttacking = false;
+        this.attackType = null; // 'punch', 'kick', 'aerial'
         this.health = 100;
         this.isCrouching = false;
         this.isDead = false;
@@ -99,6 +100,9 @@ class Sprite {
         this.inputBuffer = [];
         this.facing = 1; // 1 for right, -1 for left
         this.animationFrame = 0;
+        this.canAttack = true;
+        this.isInAir = false;
+        this.kickAnimProgress = 0;
     }
 
     draw() {
@@ -163,10 +167,10 @@ class Sprite {
         ctx.fillRect(-5, 0, 10, 30);
         ctx.restore();
 
-        // Front Arm
+        // Front Arm (Punch animation)
         ctx.save();
         ctx.translate(torsoWidth / 2 + 2, torsoY + 10);
-        if (this.isAttacking) {
+        if (this.isAttacking && this.attackType === 'punch') {
             ctx.rotate(-Math.PI / 2);
             ctx.fillRect(-5, 0, 10, 45);
             ctx.fillStyle = '#fff';
@@ -178,6 +182,56 @@ class Sprite {
         }
         ctx.restore();
 
+        // Kick animation (Front Leg extended with animation)
+        if (this.isAttacking && (this.attackType === 'kick' || this.attackType === 'aerial')) {
+            // Calculate kick animation progress (0 to 1)
+            const kickProgress = this.kickAnimProgress || 0;
+            const kickExtension = Math.sin(kickProgress * Math.PI) * 60; // Smooth extension
+
+            ctx.save();
+            // Position kick from hip area
+            ctx.translate(10, -legLen - 10);
+            ctx.rotate(-Math.PI / 3); // Angled kick
+
+            // Upper leg (thigh)
+            ctx.fillStyle = this.isFrozen ? '#fff' : this.color;
+            ctx.fillRect(0, 0, 12, 25);
+
+            // Lower leg (shin) - extends during kick
+            ctx.save();
+            ctx.translate(6, 25);
+            ctx.rotate(-Math.PI / 6);
+            ctx.fillRect(-6, 0, 12, 30 + kickExtension * 0.5);
+
+            // Boot/Foot with glow effect
+            ctx.shadowBlur = 30 + kickProgress * 20;
+            ctx.shadowColor = '#fff';
+            ctx.fillStyle = '#fff';
+            ctx.translate(0, 30 + kickExtension * 0.5);
+            ctx.fillRect(-10, 0, 20, 18);
+
+            // Impact spark effect at max extension
+            if (kickProgress > 0.5) {
+                ctx.fillStyle = this.color;
+                for (let i = 0; i < 3; i++) {
+                    ctx.fillRect(15 + i * 8, -4 + Math.random() * 8, 6, 3);
+                }
+            }
+
+            ctx.restore();
+            ctx.restore();
+
+            // Motion blur trail effect
+            ctx.globalAlpha = 0.3;
+            ctx.save();
+            ctx.translate(10 - kickExtension * 0.3, -legLen - 10);
+            ctx.rotate(-Math.PI / 3);
+            ctx.fillStyle = this.color;
+            ctx.fillRect(0, 0, 12, 55);
+            ctx.restore();
+            ctx.globalAlpha = 1.0;
+        }
+
         ctx.restore();
     }
 
@@ -188,11 +242,31 @@ class Sprite {
             this.facing = (opponent.position.x > this.position.x) ? 1 : -1;
         }
 
+        // Update kick animation progress
+        if (this.isAttacking && (this.attackType === 'kick' || this.attackType === 'aerial')) {
+            this.kickAnimProgress = Math.min(this.kickAnimProgress + 0.15, 1);
+        } else {
+            this.kickAnimProgress = 0;
+        }
+
         this.draw();
 
-        // Update Attack Box Position & Offset based on facing
-        this.attackBox.offset.x = (this.facing === 1) ? 0 : -60;
-        const attackY = this.isCrouching ? this.position.y + 60 : this.position.y + 30;
+        // Check if in air
+        this.isInAir = (this.position.y + this.height < GROUND_Y - 5);
+
+        // Update Attack Box Position & Offset based on facing and attack type
+        if (this.attackType === 'kick' || this.attackType === 'aerial') {
+            this.attackBox.offset.x = (this.facing === 1) ? 10 : -70;
+            this.attackBox.width = 110;
+            this.attackBox.height = 40;
+        } else {
+            this.attackBox.offset.x = (this.facing === 1) ? 0 : -60;
+            this.attackBox.width = 100;
+            this.attackBox.height = 50;
+        }
+
+        const attackY = this.isCrouching ? this.position.y + 60 :
+            (this.attackType === 'aerial' ? this.position.y + 40 : this.position.y + 30);
         this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
         this.attackBox.position.y = attackY;
 
@@ -211,10 +285,24 @@ class Sprite {
         if (this.position.x + this.width > canvas.width) this.position.x = canvas.width - this.width;
     }
 
-    attack() {
-        if (this.isDead || this.isFrozen) return;
+    attack(type = 'punch') {
+        if (this.isDead || this.isFrozen || !this.canAttack) return;
+
         this.isAttacking = true;
-        setTimeout(() => { this.isAttacking = false; }, 100);
+        this.attackType = type;
+        this.canAttack = false;
+
+        // Attack hit-box duration
+        setTimeout(() => {
+            this.isAttacking = false;
+            this.attackType = null;
+        }, 150);
+
+        // Cooldown duration before next attack
+        setTimeout(() => {
+            this.canAttack = true;
+        }, 450);
+
         this.checkSpecialMove();
     }
 
@@ -267,8 +355,10 @@ class Sprite {
 
 let player1, player2;
 const keys = {
-    w: { pressed: false }, a: { pressed: false }, d: { pressed: false }, s: { pressed: false }, x: { pressed: false },
-    arrowup: { pressed: false }, arrowleft: { pressed: false }, arrowright: { pressed: false }, arrowdown: { pressed: false }, l: { pressed: false }
+    w: { pressed: false }, a: { pressed: false }, d: { pressed: false }, s: { pressed: false },
+    x: { pressed: false }, c: { pressed: false },
+    arrowup: { pressed: false }, arrowleft: { pressed: false }, arrowright: { pressed: false },
+    arrowdown: { pressed: false }, l: { pressed: false }, k: { pressed: false }
 };
 
 function init() {
@@ -377,15 +467,73 @@ function animate() {
     }
     player2.isCrouching = keys.arrowdown.pressed;
 
-    // Hit detection
+    // Hit detection with damage based on attack type
     if (player1.isAttacking && rectangularCollision({ rectangle1: player1, rectangle2: player2 })) {
-        player2.health -= 5; player1.isAttacking = false; p2HealthEl.style.width = Math.max(0, player2.health) + '%';
-        for (let j = 0; j < 15; j++) particles.push(new Particle(player2.position.x + 25, player2.position.y + 60, '#ff0055', 4));
+        let damage = 5;
+        let particleCount = 15;
+        let particleColor = '#ff0055';
+
+        if (player1.attackType === 'kick') {
+            damage = 7;
+            particleCount = 25;
+            particleColor = '#ffaa00';
+        }
+        if (player1.attackType === 'aerial') {
+            damage = 10;
+            particleCount = 35;
+            particleColor = '#00ffff';
+        }
+
+        player2.health -= damage;
+        player1.isAttacking = false;
+        player1.attackType = null;
+        player1.kickAnimProgress = 0;
+        p2HealthEl.style.width = Math.max(0, player2.health) + '%';
+
+        // Create impact particles
+        for (let j = 0; j < particleCount; j++) {
+            particles.push(new Particle(
+                player2.position.x + 25,
+                player2.position.y + 60,
+                particleColor,
+                Math.random() * 6 + 2
+            ));
+        }
+
         if (player2.health <= 10 && !finishHimMode) triggerFinishHim();
     }
     if (player2.isAttacking && rectangularCollision({ rectangle1: player2, rectangle2: player1 })) {
-        player1.health -= 5; player2.isAttacking = false; p1HealthEl.style.width = Math.max(0, player1.health) + '%';
-        for (let j = 0; j < 15; j++) particles.push(new Particle(player1.position.x + 25, player1.position.y + 60, '#ff0055', 4));
+        let damage = 5;
+        let particleCount = 15;
+        let particleColor = '#ff0055';
+
+        if (player2.attackType === 'kick') {
+            damage = 7;
+            particleCount = 25;
+            particleColor = '#ffaa00';
+        }
+        if (player2.attackType === 'aerial') {
+            damage = 10;
+            particleCount = 35;
+            particleColor = '#00ffff';
+        }
+
+        player1.health -= damage;
+        player2.isAttacking = false;
+        player2.attackType = null;
+        player2.kickAnimProgress = 0;
+        p1HealthEl.style.width = Math.max(0, player1.health) + '%';
+
+        // Create impact particles
+        for (let j = 0; j < particleCount; j++) {
+            particles.push(new Particle(
+                player1.position.x + 25,
+                player1.position.y + 60,
+                particleColor,
+                Math.random() * 6 + 2
+            ));
+        }
+
         if (player1.health <= 10 && !finishHimMode) triggerFinishHim();
     }
 }
@@ -403,6 +551,7 @@ function triggerFinishHim() {
 }
 
 window.addEventListener('keydown', (e) => {
+    if (e.repeat) return;
     const key = e.key.toLowerCase();
     if (keys[key] !== undefined) keys[key].pressed = true;
 
@@ -411,13 +560,39 @@ window.addEventListener('keydown', (e) => {
         case 'a': player1.lastKey = 'a'; player1.inputBuffer.push('a'); break;
         case 'w': if (player1.position.y + player1.height >= GROUND_Y) player1.velocity.y = -12; break;
         case 's': player1.inputBuffer.push('s'); break;
-        case 'x': player1.attack(); break;
+        case 'x':
+            if (player1.isInAir) {
+                player1.attack('aerial');
+            } else {
+                player1.attack('punch');
+            }
+            break;
+        case 'c':
+            if (player1.isInAir) {
+                player1.attack('aerial');
+            } else {
+                player1.attack('kick');
+            }
+            break;
 
         case 'arrowright': player2.lastKey = 'arrowright'; player2.inputBuffer.push('arrowright'); break;
         case 'arrowleft': player2.lastKey = 'arrowleft'; player2.inputBuffer.push('arrowleft'); break;
         case 'arrowup': if (player2.position.y + player2.height >= GROUND_Y) player2.velocity.y = -12; break;
         case 'arrowdown': player2.inputBuffer.push('arrowdown'); break;
-        case 'l': player2.attack(); break;
+        case 'l':
+            if (player2.isInAir) {
+                player2.attack('aerial');
+            } else {
+                player2.attack('punch');
+            }
+            break;
+        case 'k':
+            if (player2.isInAir) {
+                player2.attack('aerial');
+            } else {
+                player2.attack('kick');
+            }
+            break;
 
         case 'enter': if (!isGameRunning) startGame(); break;
     }
